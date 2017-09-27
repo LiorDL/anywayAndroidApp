@@ -9,6 +9,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -29,6 +30,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import il.co.anyway.app.filters.FiltersRepository;
+import il.co.anyway.app.filters.UriQueryParamAppender;
 import il.co.anyway.app.models.Accident;
 import il.co.anyway.app.models.Discussion;
 import il.co.anyway.app.singletons.AnywayRequestQueue;
@@ -278,18 +281,13 @@ public class Utility {
      * @param zoomLevel map zoom level
      * @param context   activity context
      */
-    public static void getMarkersByParameters(LatLngBounds bounds, int zoomLevel, Context context) {
+    public static void getMarkersByParameters(LatLngBounds bounds, int zoomLevel, Context context, boolean shouldReset) {
 
         if (bounds == null || context == null)
             return;
 
         // Get preferences form SharedPreferences
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-        Boolean show_fatal = sharedPrefs.getBoolean(context.getString(R.string.pref_accidents_fatal_key), true);
-        Boolean show_severe = sharedPrefs.getBoolean(context.getString(R.string.pref_accidents_severe_key), true);
-        Boolean show_light = sharedPrefs.getBoolean(context.getString(R.string.pref_accidents_light_key), true);
-        Boolean show_inaccurate = sharedPrefs.getBoolean(context.getString(R.string.pref_accidents_inaccurate_key), false);
         String fromDate = sharedPrefs.getString(context.getString(R.string.pref_from_date_key), context.getString(R.string.pref_default_from_date));
         String toDate = sharedPrefs.getString(context.getString(R.string.pref_to_date_key), context.getString(R.string.pref_default_to_date));
 
@@ -301,10 +299,7 @@ public class Utility {
                 zoomLevel,
                 getTimeStamp(fromDate),
                 getTimeStamp(toDate),
-                show_fatal,
-                show_severe,
-                show_light,
-                show_inaccurate
+                shouldReset
         );
     }
 
@@ -489,7 +484,9 @@ public class Utility {
 
         // choose the icon to show by the icon type and the severity
         int icon = 0;
-        if (accidentSubType == Accident.ACCIDENT_MULTIPLE) {
+        if (accidentSubType == Accident.ACCIDENT_TYPE_RESCUE_UNION) {
+            icon = R.drawable.ic_security_black_24dp;
+        } else if (accidentSubType == Accident.ACCIDENT_MULTIPLE) {
             switch (severity) {
                 case Accident.SEVERITY_FATAL:
                     icon = R.drawable.multiple_lethal;
@@ -553,10 +550,6 @@ public class Utility {
     public static String getCurrentPositionStringURI(LatLng location, int zoomLevel, Context context) {
 
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        Boolean show_fatal = sharedPrefs.getBoolean(context.getString(R.string.pref_accidents_fatal_key), true);
-        Boolean show_severe = sharedPrefs.getBoolean(context.getString(R.string.pref_accidents_severe_key), true);
-        Boolean show_light = sharedPrefs.getBoolean(context.getString(R.string.pref_accidents_light_key), true);
-        Boolean show_inaccurate = sharedPrefs.getBoolean(context.getString(R.string.pref_accidents_inaccurate_key), false);
         String fromDate = sharedPrefs.getString(context.getString(R.string.pref_from_date_key), context.getString(R.string.pref_default_from_date));
         String toDate = sharedPrefs.getString(context.getString(R.string.pref_to_date_key), context.getString(R.string.pref_default_to_date));
 
@@ -564,17 +557,18 @@ public class Utility {
         fromDate = DatePreference.getYear(fromDate) + "-" + DatePreference.getMonth(fromDate) + "-" + DatePreference.getDate(fromDate);
         toDate = DatePreference.getYear(toDate) + "-" + DatePreference.getMonth(toDate) + "-" + DatePreference.getDate(toDate);
 
-        Uri builtUri = Uri.parse(AnywayRequestQueue.ANYWAY_BASE_URL).buildUpon()
+        Uri.Builder builder = Uri.parse(AnywayRequestQueue.ANYWAY_BASE_URL).buildUpon()
                 .appendQueryParameter("start_date", fromDate)
                 .appendQueryParameter("end_date", toDate)
-                .appendQueryParameter("show_fatal", show_fatal ? "1" : "0")
-                .appendQueryParameter("show_severe", show_severe ? "1" : "0")
-                .appendQueryParameter("show_light", show_light ? "1" : "0")
-                .appendQueryParameter("show_inaccurate", show_inaccurate ? "1" : "0")
                 .appendQueryParameter("zoom", Integer.toString(zoomLevel))
                 .appendQueryParameter("lat", Double.toString(location.latitude))
-                .appendQueryParameter("lon", Double.toString(location.longitude))
-                .build();
+                .appendQueryParameter("lon", Double.toString(location.longitude));
+
+        for (UriQueryParamAppender filter : FiltersRepository.getFilters(context)) {
+            filter.appendQueryParameter(builder);
+        }
+
+        Uri builtUri = builder.build();
 
 
         return builtUri.toString();
@@ -586,6 +580,20 @@ public class Utility {
                 .getActiveNetworkInfo();
 
         return info != null && info.isConnected();
+    }
+
+    public static double getBearingBetweenTwoLocations(LatLng from, LatLng to) {
+        double dLon = (from.longitude - to.longitude);
+        double y = Math.sin(dLon) * Math.cos(to.latitude);
+        double x = Math.cos(from.latitude)*Math.sin(to.latitude) - Math.sin(to.latitude)*Math.cos(from.latitude)*Math.cos(dLon);
+        double brng = Math.toDegrees((Math.atan2(y, x)));
+        return (360 - ((brng + 360) % 360));
+    }
+
+    public static float getDistanceBetweenTwoLocations(LatLng from, LatLng to) {
+        float[] results = new float[1];
+        Location.distanceBetween(from.latitude, from.longitude, to.latitude, to.longitude, results);
+        return results[0];
     }
 
 }

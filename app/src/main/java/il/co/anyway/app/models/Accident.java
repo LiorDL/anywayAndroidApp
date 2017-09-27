@@ -36,6 +36,7 @@ public class Accident {
     public static final int ACCIDENT_TYPE_BACK_TO_SIDE = 18;
     public static final int ACCIDENT_TYPE_WITH_ANIMAL = 19;
     public static final int ACCIDENT_TYPE_WITH_VEHICLE_LOAD = 20;
+    public static final int ACCIDENT_TYPE_RESCUE_UNION = 21;
     @SuppressWarnings("unused")
     private final String LOG_TAG = Accident.class.getSimpleName();
     // accident fields
@@ -176,5 +177,10 @@ public class Accident {
     public Accident setMarkerAddedToMap(boolean markerAddedToMap) {
         this.markerAddedToMap = markerAddedToMap;
         return this;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Accident %s is in %s", title, location);
     }
 }

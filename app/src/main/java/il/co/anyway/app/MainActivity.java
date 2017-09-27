@@ -63,6 +63,8 @@ import il.co.anyway.app.models.AccidentCluster;
 import il.co.anyway.app.models.Discussion;
 import il.co.anyway.app.singletons.AnywayRequestQueue;
 import il.co.anyway.app.singletons.MarkersManager;
+import il.co.anyway.app.singletons.OnNewAccidentListener;
+import il.co.anyway.app.singletons.OnNewDiscussionListener;
 
 public class MainActivity extends AppCompatActivity
         implements
@@ -74,10 +76,12 @@ public class MainActivity extends AppCompatActivity
         OnMarkerClickListener,
         GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener,
-        LocationListener {
+        LocationListener,
+        OnNewAccidentListener,
+        OnNewDiscussionListener {
 
-    private static final LatLng START_LOCATION = new LatLng(31.774511, 35.011642);
-    private static final int START_ZOOM_LEVEL = 7;
+    private static final LatLng START_LOCATION = new LatLng(32.065953, 34.775512);
+    private static final int START_ZOOM_LEVEL = 17;
     private static final int MINIMUM_ZOOM_LEVEL_TO_SHOW_ACCIDENTS = 16;
     private static final String TUTORIAL_SHOWED_KEY = "il.co.anyway.app.TUTORIAL_SHOWED";
 
@@ -117,7 +121,7 @@ public class MainActivity extends AppCompatActivity
         mDoubleBackToExitPressedOnce = false;
 
         // map start in START_ZOOM_LEVEL
-        mMapIsInClusterMode = true;
+        mMapIsInClusterMode = false;
 
         // Dialog informing the user this app need internet connection never shown before
         mShowedDialogAboutInternetConnection = false;
@@ -176,7 +180,9 @@ public class MainActivity extends AppCompatActivity
         setUpMapIfNeeded();
 
         // register activity updates from MarkersManager
-        MarkersManager.getInstance().registerListenerActivity(this);
+        MarkersManager.getInstance().registerNewAccidentListener(this);
+        MarkersManager.getInstance().registerNewDiscussionListener(this);
+
 
         // re-call fetching markers from server, needed when coming
         // back from from discussion to fetch new discussion marker
@@ -203,7 +209,8 @@ public class MainActivity extends AppCompatActivity
         mGoogleApiClient.disconnect();
 
         // unregister activity updates from MarkersManager
-        MarkersManager.getInstance().unregisterListenerActivity();
+        MarkersManager.getInstance().unregisterAccidentListener(this);
+        MarkersManager.getInstance().unregsiterDiscussionListener();
 
         super.onStop();
     }
@@ -256,7 +263,7 @@ public class MainActivity extends AppCompatActivity
         mMap.setClustering(settings);
 
         // Disable location button and blue dot
-        mMap.setMyLocationEnabled(false);
+        mMap.setMyLocationEnabled(true);
 
         // Disable toolbar on the right bottom corner(taking user to google maps app)
         mMap.getUiSettings().setMapToolbarEnabled(false);
@@ -770,7 +777,7 @@ public class MainActivity extends AppCompatActivity
 
         // fetch accidents from anyway or fetch from cluster decided by zoom level
         if (zoomLevel >= MINIMUM_ZOOM_LEVEL_TO_SHOW_ACCIDENTS)
-            Utility.getMarkersByParameters(bounds, zoomLevel, this);
+            Utility.getMarkersByParameters(bounds, zoomLevel, this, false);
         else
             new FetchClusteredAccidents(bounds, zoomLevel, this);
     }
@@ -831,6 +838,12 @@ public class MainActivity extends AppCompatActivity
             addDiscussionToMap(d);
     }
 
+
+    @Override
+    public void onNewAccident(Accident a) {
+       addAccidentToMap(a);
+    }
+
     /**
      * Add accident marker to map
      *
@@ -850,6 +863,12 @@ public class MainActivity extends AppCompatActivity
                 .setData(a);
 
         a.setMarkerAddedToMap(true);
+    }
+
+
+    @Override
+    public void onNewDiscussion(Discussion d) {
+        addDiscussionToMap(d);
     }
 
     /**

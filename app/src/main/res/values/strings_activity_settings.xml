@@ -5,6 +5,7 @@
 
     <!-- Example General settings -->
     <string name="pref_header_general">סינון לפי חומרה</string>
+    <string name="pref_header_road_type">סינון לפי סוג דרך</string>
 
     <string name="pref_title_accidents_fatal">תאונות קטלניות</string>
     <string name="pref_accidents_fatal_key" translatable="false">checkbox_accidents_fatal</string>
@@ -15,15 +16,30 @@
     <string name="pref_title_accidents_inaccurate">תאונות שמיקומן משוער</string>
     <string name="pref_accidents_inaccurate_key" translatable="false">checkbox_accidents_inaccurate</string>
 
+    <string name="pref_title_urban_road">כבישים עירוניים</string>
+    <string name="pref_urban_road_key" translatable="false">checkbox_urban_road</string>
+    <string name="pref_title_highway">כבישים בין עירוניים</string>
+    <string name="pref_highway_key" translatable="false">checkbox_highway</string>
+
+    <string name="pref_title_intersection">צומת</string>
+    <string name="pref_intersection_key" translatable="false">checkbox_intersection</string>
+    <string name="pref_title_non_intersection">לא בצומת</string>
+    <string name="pref_non_intersection_key" translatable="false">checkbox_non_intersection</string>
+
+    <string name="pref_title_one_way">חד-סטרי</string>
+    <string name="pref_one_way_key" translatable="false">checkbox_one_way</string>
+    <string name="pref_title_two_way">דו-סטרי</string>
+    <string name="pref_two_way_key" translatable="false">checkbox_two_way</string>
+
 
     <string name="pref_header_date_range">סינון לפי טווח תאריכים</string>
 
     <string name="pref_title_from_date">מתאריך</string>
-    <string name="pref_default_from_date">01/01/2014</string>
+    <string name="pref_default_from_date">01/01/2016</string>
     <string name="pref_from_date_key" translatable="false">show_from_date_new</string>
 
     <string name="pref_title_to_date">עד תאריך</string>
-    <string name="pref_default_to_date">01/01/2015</string>
+    <string name="pref_default_to_date">01/08/2017</string>
     <string name="pref_to_date_key" translatable="false">show_to_date_new</string>
 
 

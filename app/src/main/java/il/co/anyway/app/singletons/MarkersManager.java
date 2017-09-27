@@ -1,9 +1,13 @@
 package il.co.anyway.app.singletons;
 
-import java.util.ArrayList;
-import java.util.List;
+import android.util.Log;
 
-import il.co.anyway.app.MainActivity;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 import il.co.anyway.app.models.Accident;
 import il.co.anyway.app.models.Discussion;
 
@@ -16,13 +20,15 @@ public class MarkersManager {
 
     private List<Accident> accidentsList;
     private List<Discussion> discussionList;
-    private MainActivity mListenerActivity;
+    private Set<OnNewAccidentListener> mOnNewAccidentListeners;
+    private OnNewDiscussionListener mOnNewDiscussionListener;
 
     // making the default constructor private make sure there will be only one instance of the accidents manager
     private MarkersManager() {
         accidentsList = new ArrayList<>();
         discussionList = new ArrayList<>();
-        mListenerActivity = null;
+        mOnNewAccidentListeners = new CopyOnWriteArraySet<>();
+        mOnNewDiscussionListener = null;
     }
 
     public static MarkersManager getInstance() {
@@ -82,8 +88,11 @@ public class MarkersManager {
 
         if (!isAccidentExist(toAdd)) {
             accidentsList.add(toAdd);
-            if (mListenerActivity != null)
-                mListenerActivity.addAccidentToMap(toAdd);
+            if (mOnNewAccidentListeners != null) {
+                for (OnNewAccidentListener onNewAccidentListener : mOnNewAccidentListeners) {
+                    onNewAccidentListener.onNewAccident(toAdd);
+                }
+            }
         } else {
             return false;
         }
@@ -104,8 +113,8 @@ public class MarkersManager {
 
         if (!isDiscussionExist(toAdd)) {
             discussionList.add(toAdd);
-            if (mListenerActivity != null)
-                mListenerActivity.addDiscussionToMap(toAdd);
+            if (mOnNewDiscussionListener != null)
+                mOnNewDiscussionListener.onNewDiscussion(toAdd);
         } else {
             return false;
         }
@@ -121,7 +130,6 @@ public class MarkersManager {
      * @return How many accidents from the list actually taken(duplicate accident will ignore)
      */
     public int addAllAccidents(List<Accident> toAddList, boolean reset) {
-
         if (reset)
             accidentsList.clear();
 
@@ -230,11 +238,19 @@ public class MarkersManager {
             d.setMarkerAddedToMap(false);
     }
 
-    public void registerListenerActivity(MainActivity activity) {
-        mListenerActivity = activity;
+    public void registerNewAccidentListener(OnNewAccidentListener onNewAccidentListener) {
+        mOnNewAccidentListeners.add(onNewAccidentListener);
     }
 
-    public void unregisterListenerActivity() {
-        mListenerActivity = null;
+    public void unregisterAccidentListener(OnNewAccidentListener onNewAccidentListener) {
+        mOnNewAccidentListeners.remove(onNewAccidentListener);
+    }
+
+    public void registerNewDiscussionListener(OnNewDiscussionListener onNewDiscussionListener) {
+        mOnNewDiscussionListener = onNewDiscussionListener;
+    }
+
+    public void unregsiterDiscussionListener() {
+        mOnNewDiscussionListener = null;
     }
 }

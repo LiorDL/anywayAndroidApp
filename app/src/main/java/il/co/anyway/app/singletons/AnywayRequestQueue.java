@@ -24,6 +24,8 @@ import java.util.Map;
 
 import il.co.anyway.app.PriorityJsonObjectRequest;
 import il.co.anyway.app.Utility;
+import il.co.anyway.app.filters.FiltersRepository;
+import il.co.anyway.app.filters.UriQueryParamAppender;
 import il.co.anyway.app.models.Accident;
 import il.co.anyway.app.models.Discussion;
 
@@ -41,6 +43,7 @@ public class AnywayRequestQueue {
     private final static String LOG_TAG = AnywayRequestQueue.class.getSimpleName();
     private static AnywayRequestQueue instance = null;
     RequestQueue mRequestQueue;
+    private Context mContext;
 
     /**
      * constructor is private to keep singleton behavior
@@ -52,6 +55,7 @@ public class AnywayRequestQueue {
         // Instantiate the RequestQueue - Volley will choose network and cache automatically.
         // This also start the queue
         mRequestQueue = Volley.newRequestQueue(context);
+        mContext = context;
     }
 
     /**
@@ -82,41 +86,38 @@ public class AnywayRequestQueue {
      * @param zoom zoom level
      * @param start_date start date (timestamp as String)
      * @param end_date end date (timestamp as String)
-     * @param show_fatal show fatal accidents
-     * @param show_severe show severe accidents
-     * @param show_light show light accidents
-     * @param show_inaccurate show inaccurate accidents
      */
     public void addMarkersRequest(double ne_lat, double ne_lng, double sw_lat, double sw_lng, int zoom,
-                                  String start_date, String end_date,
-                                  boolean show_fatal, boolean show_severe, boolean show_light, boolean show_inaccurate) {
+                                  String start_date, String end_date, boolean shouldReset) {
 
         final String DEFAULT_REQUEST_FORMAT = "json";
 
         // Construct the URL for the Anyway accidents query
-        Uri builtUri = Uri.parse(ANYWAY_MARKERS_BASE_URL).buildUpon()
+        Uri.Builder builder = Uri.parse(ANYWAY_MARKERS_BASE_URL).buildUpon()
                 .appendQueryParameter("ne_lat", Double.toString(ne_lat))
                 .appendQueryParameter("ne_lng", Double.toString(ne_lng))
                 .appendQueryParameter("sw_lat", Double.toString(sw_lat))
                 .appendQueryParameter("sw_lng", Double.toString(sw_lng))
                 .appendQueryParameter("zoom", Integer.toString(zoom))
-                .appendQueryParameter("thin_markers","false")
+                .appendQueryParameter("thin_markers", "false")
                 .appendQueryParameter("start_date", start_date)
                 .appendQueryParameter("end_date", end_date)
-                .appendQueryParameter("show_fatal", show_fatal ? "1" : "0")
-                .appendQueryParameter("show_severe", show_severe ? "1" : "0")
-                .appendQueryParameter("show_light", show_light ? "1" : "0")
-                .appendQueryParameter("show_inaccurate", show_inaccurate ? "1" : "0")
                 .appendQueryParameter("format", DEFAULT_REQUEST_FORMAT)
 
                 // TODO add this options in user preferences
-                .appendQueryParameter("show_markers","1")
-                .appendQueryParameter("show_discussions","1")
-                .build();
+                .appendQueryParameter("show_markers", "1")
+                .appendQueryParameter("show_discussions", "1");
+
+        for (UriQueryParamAppender filter : FiltersRepository.getFilters(mContext)) {
+            filter.appendQueryParameter(builder);
+        }
+
+        Uri builtUri = builder.build();
 
         try {
             URL url = new URL(builtUri.toString());
-            addMarkersRequest(url.toString());
+            Log.d(AnywayRequestQueue.class.getSimpleName(), "Url: " + url);
+            addMarkersRequest(url.toString(), shouldReset);
         } catch (MalformedURLException e) {
             Log.e(LOG_TAG, "Error building the URL: " + e.getMessage());
         }
@@ -127,7 +128,7 @@ public class AnywayRequestQueue {
      *
      * @param url URL of request
      */
-    private void addMarkersRequest(String url) {
+    private void addMarkersRequest(String url, final boolean shouldReset) {
 
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, new Response.Listener<JSONObject>() {
@@ -141,8 +142,8 @@ public class AnywayRequestQueue {
                         int fetchStatus = Utility.getMarkersDataFromJson(response, fetchedAccidents, fetchedDiscussion);
 
                         if (fetchStatus == 0) {
-                            MarkersManager.getInstance().addAllAccidents(fetchedAccidents, MarkersManager.DO_NOT_RESET);
-                            MarkersManager.getInstance().addAllDiscussions(fetchedDiscussion, MarkersManager.DO_NOT_RESET);
+                            MarkersManager.getInstance().addAllAccidents(fetchedAccidents, shouldReset);
+                            MarkersManager.getInstance().addAllDiscussions(fetchedDiscussion, shouldReset);
                         }
 
                     }

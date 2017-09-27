@@ -20,9 +20,44 @@
             android:layout="@layout/custom_preference_widget_layout" />
 
         <CheckBoxPreference
-            android:defaultValue="false"
+            android:defaultValue="true"
             android:key="@string/pref_accidents_inaccurate_key"
             android:title="@string/pref_title_accidents_inaccurate"
+            android:layout="@layout/custom_preference_widget_layout" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/pref_header_road_type">
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_urban_road_key"
+            android:title="@string/pref_title_urban_road"
+            android:layout="@layout/custom_preference_widget_layout" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_highway_key"
+            android:title="@string/pref_title_highway"
+            android:layout="@layout/custom_preference_widget_layout" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_intersection_key"
+            android:title="@string/pref_title_intersection"
+            android:layout="@layout/custom_preference_widget_layout" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_non_intersection_key"
+            android:title="@string/pref_title_non_intersection"
+            android:layout="@layout/custom_preference_widget_layout" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_one_way_key"
+            android:title="@string/pref_title_one_way"
+            android:layout="@layout/custom_preference_widget_layout" />
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="@string/pref_two_way_key"
+            android:title="@string/pref_title_two_way"
             android:layout="@layout/custom_preference_widget_layout" />
     </PreferenceCategory>
 

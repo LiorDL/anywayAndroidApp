@@ -66,6 +66,15 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="il.co.anyway.app.MainActivity" />
         </activity>
+
+        <activity
+            android:name=".StreetViewActivity"
+            android:label="Street View"
+            android:parentActivityName=".MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="il.co.anyway.app.MainActivity" />
+        </activity>
         <activity
             android:name=".DisqusActivity"
             android:configChanges="orientation|screenSize"
@@ -95,6 +104,8 @@
                 android:value="il.co.anyway.app.MainActivity" />
 
         </activity>
+
+
     </application>
 
 </manifest>

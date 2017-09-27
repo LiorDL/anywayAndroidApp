@@ -56,7 +56,7 @@ public class DatePreference extends DialogPreference {
         Date minDate, maxDate;
         try {
             minDate = sdf.parse(MINIMUM_DATE);
-            maxDate = sdf.parse(MAXIMUM_DATE);
+            maxDate = new Date();
 
             picker.setMinDate(minDate.getTime());
             picker.setMaxDate(maxDate.getTime());

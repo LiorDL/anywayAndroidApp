@@ -24,12 +24,14 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import il.co.anyway.app.filters.FiltersRepository;
+import il.co.anyway.app.filters.UriQueryParamAppender;
 import il.co.anyway.app.models.AccidentCluster;
 
 public class FetchClusteredAccidents {
 
     private final static String LOG_TAG = FetchClusteredAccidents.class.getSimpleName();
-    private final static String ANYWAY_CLUSTER_URL = "http://www.anyway.co.il/clusters";
+    private final static String ANYWAY_CLUSTER_URL = "https://www.anyway.co.il/clusters";
 
     private static FetchAsync currentRunningTask = null;
 
@@ -75,33 +77,31 @@ public class FetchClusteredAccidents {
             // Get preferences form SharedPreferences
             SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(mCallingActivity);
 
-            Boolean show_fatal = sharedPrefs.getBoolean(mCallingActivity.getString(R.string.pref_accidents_fatal_key), true);
-            Boolean show_severe = sharedPrefs.getBoolean(mCallingActivity.getString(R.string.pref_accidents_severe_key), true);
-            Boolean show_light = sharedPrefs.getBoolean(mCallingActivity.getString(R.string.pref_accidents_light_key), true);
-            Boolean show_inaccurate = sharedPrefs.getBoolean(mCallingActivity.getString(R.string.pref_accidents_inaccurate_key), false);
             String fromDate = sharedPrefs.getString(mCallingActivity.getString(R.string.pref_from_date_key), mCallingActivity.getString(R.string.pref_default_from_date));
             String toDate = sharedPrefs.getString(mCallingActivity.getString(R.string.pref_to_date_key), mCallingActivity.getString(R.string.pref_default_to_date));
 
             try {
                 // Construct the URL for the Anyway cluster query
-                Uri builtUri = Uri.parse(ANYWAY_CLUSTER_URL).buildUpon()
+                Uri.Builder builder = Uri.parse(ANYWAY_CLUSTER_URL).buildUpon()
                         .appendQueryParameter("ne_lat", Double.toString(mBounds.northeast.latitude))
                         .appendQueryParameter("ne_lng", Double.toString(mBounds.northeast.longitude))
                         .appendQueryParameter("sw_lat", Double.toString(mBounds.southwest.latitude))
                         .appendQueryParameter("sw_lng", Double.toString(mBounds.southwest.longitude))
                         .appendQueryParameter("zoom", Integer.toString(mZoomLevel))
-                        .appendQueryParameter("thin_markers","true")
+                        .appendQueryParameter("thin_markers", "true")
                         .appendQueryParameter("start_date", Utility.getTimeStamp(fromDate))
                         .appendQueryParameter("end_date", Utility.getTimeStamp(toDate))
-                        .appendQueryParameter("show_fatal", show_fatal ? "1" : "0")
-                        .appendQueryParameter("show_severe", show_severe ? "1" : "0")
-                        .appendQueryParameter("show_light", show_light ? "1" : "0")
-                        .appendQueryParameter("show_inaccurate", show_inaccurate ? "1" : "0")
 
                         // TODO add this options in user preferences
                         .appendQueryParameter("show_markers", "1")
-                        .appendQueryParameter("show_discussions", "1")
-                        .build();
+                        .appendQueryParameter("show_discussions", "1");
+
+                for (UriQueryParamAppender filter : FiltersRepository.getFilters(mCallingActivity)) {
+                    filter.appendQueryParameter(builder);
+                }
+
+
+                Uri builtUri = builder.build();
 
                 URL url = new URL(builtUri.toString());
 

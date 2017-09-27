@@ -18,8 +18,8 @@
     <!-- Disqus activity -->
     <string name="title_activity_disqus">דיון</string>
     <string name="refresh_comments">טען מחדש</string>
-    <string name="confirm_opening_new_discussion_title">רק מוודאים…</string>
-    <string name="confirm_opening_new_discussion">האם ברצונך לפתוח דיון חדש בנקודה זו?</string>
+    <string name="confirm_opening_new_discussion_title">מה ברצונך לעשות בנקודה זו?</string>
+    <string name="confirm_opening_new_discussion">מה ברצונך לעשות בנקודה זו?</string>
 
     <!-- Search Strings -->
     <string name="action_address_search">חפש כתובת</string>
@@ -39,8 +39,8 @@
 
     <string name="cancel">ביטול</string>
     <string name="close">סגור</string>
-    <string name="yes">כן</string>
-    <string name="no">לא</string>
+    <string name="yes">לפחות דיון חדש</string>
+    <string name="no">סגור</string>
     <string name="my_location">המיקום שלי</string>
 
     <!-- internet connection -->
