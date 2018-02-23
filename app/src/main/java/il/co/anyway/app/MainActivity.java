@@ -263,7 +263,7 @@ public class MainActivity extends AppCompatActivity
         mMap.setClustering(settings);
 
         // Disable location button and blue dot
-        mMap.setMyLocationEnabled(true);
+        mMap.setMyLocationEnabled(false);
 
         // Disable toolbar on the right bottom corner(taking user to google maps app)
         mMap.getUiSettings().setMapToolbarEnabled(false);
