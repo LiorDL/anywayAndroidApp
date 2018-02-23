@@ -63,7 +63,7 @@
     <string name="next">הבא</string>
     <string name="skip">דלג</string>
     <string name="done">סיום</string>
-    <string name="tutorial_screen_a_text">\u200FANYWAY זו הדרך שלנו למנוע את התאונה הבאה</string>
+    <string name="tutorial_screen_a_text">הדרך שלנו למנוע את התאונה הבאה</string>
     <string name="tutorial_screen_a_btn_text">בואו נראה לכם איך</string>
     <string name="tutorial_screen_b_text">על המפה ניתן לראות היכן התרחשו תאונות דרכים עם נפגעים</string>
     <string name="tutorial_screen_b_location_sub_text">מסמל את המיקום שלך</string>
