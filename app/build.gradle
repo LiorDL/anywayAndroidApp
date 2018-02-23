@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 22
-    buildToolsVersion '25.0.0'
+    buildToolsVersion '26.0.2'
 
     defaultConfig {
         applicationId "il.co.anyway.app"
-        minSdkVersion 11
+        minSdkVersion 14
         targetSdkVersion 22
         versionCode 17
         versionName "2.0.0"
@@ -50,11 +50,10 @@ android {
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.google.android.gms:play-services:7.5.0'
-    compile 'com.android.support:support-v4:22.2.0'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile 'com.google.android.gms:play-services-maps:11.8.0'
+    compile 'com.google.android.gms:play-services-location:11.8.0'
+    compile 'com.android.support:support-v4:22.2.1'
     compile 'com.mcxiaoke.volley:library:1.0.15'
-    compile('com.androidmapsextensions:android-maps-extensions:2.2.0') {
-        exclude module: 'play-services-maps'
-    }
+    compile 'com.androidmapsextensions:android-maps-extensions:2.4.0'
 }
