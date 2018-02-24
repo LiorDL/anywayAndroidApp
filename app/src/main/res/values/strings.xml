@@ -74,4 +74,7 @@
     <string name="tutorial_screen_e_btn_text">בואו נתחיל</string>
     <string name="tutorial_screen_e_text">אנחנו מאמינים שבעזרת ידע ציבורי קיים המוצג באתר יווצרו ידע ותובנות חדשים.\nשיתוף הידע הזה יאפשר לחברה האזרחית להתארגן לפעולה אקטיבית ולהזרים הצעות, רעיונות והתראות בחזרה אל הרשויות.\nכל זה יכול להיות אפשרי עם העזרה שלכם.</string>
 
+    <string name="google_street_view">Street View</string>
+    <string name="start_discussion">פתח דיון חדש</string>
+
 </resources>

@@ -55,7 +55,7 @@ import java.util.Date;
 import java.util.List;
 
 import il.co.anyway.app.dialogs.AccidentsDialogs;
-import il.co.anyway.app.dialogs.ConfirmDiscussionCreateDialogFragment;
+import il.co.anyway.app.dialogs.PointDialog;
 import il.co.anyway.app.dialogs.InternetRequiredDialogFragment;
 import il.co.anyway.app.dialogs.SearchAddress;
 import il.co.anyway.app.models.Accident;
@@ -579,14 +579,9 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapLongClick(LatLng latLng) {
-
         // get location and show dialog confirming create discussion
-        Bundle args = new Bundle();
-        args.putParcelable("location", latLng);
-        ConfirmDiscussionCreateDialogFragment dialog = new ConfirmDiscussionCreateDialogFragment();
-        dialog.setArguments(args);
-        dialog.show(getSupportFragmentManager(), "");
-
+        PointDialog dialog = PointDialog.newInstance(latLng);
+        dialog.show(getSupportFragmentManager(), PointDialog.TAG);
     }
 
     @Override
